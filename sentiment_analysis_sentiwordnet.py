@@ -15,7 +15,7 @@ from lemmatize_wordnet import get_wordnet_pos
 def SentiWordnet_analysis(lemmatized_tokens):
     """
     Sentiment analysis using SentiWordnet.
-    0 meaning neutral, grater than 0 positive and lesser than 0 negative.
+    0 meaning neutral, greater than 0 positive and lesser than 0 negative.
     
     :param lemmatized_tokens: a list of str, preprocesed tokens
     :return: float, the sentiment score.

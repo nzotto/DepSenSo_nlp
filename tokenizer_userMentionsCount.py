@@ -4,6 +4,7 @@
     Tokenize text using TweetTokenizer
     Removes stopwords, capitalization, twitter user handles, hyperlinks and punctuation
     Reduces "long words" ie: 'looooooooooooong' => 'looong'
+    Counts distinct user mentions.
 """
 # import nltk:
 from nltk.corpus import stopwords
