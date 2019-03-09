@@ -31,6 +31,7 @@ def get_twitter_data(twitter, username):
     :param username: string, the twitter-username of the target
     :return: tweet_count. int, the number of tweet colected
              status_list, a list of strings, the statuses posted by the user over the last month
+             hashtag_dict, a dictionary, the hashtags and their frequency. {"hashtag, string": nbOfUses, int}
     """
     ## optain Twiiter_User_Object (TUO)
     TUO = twitter.get_user(user_name)
@@ -46,20 +47,27 @@ def get_twitter_data(twitter, username):
     ## get user's timeline over the last month
     tweet_count = 0
     status_list = []
+    hashtag_dict = {}
     end_date = datetime.utcnow() - timedelta(month=1)
     for status in Cursor(auth_api.user_timeline, id=target).items():
         ## exit loop after specified date.
         if status.created_at < end_date:
             break
         tweet_count += 1
-        if hasattr(status, "entities"):
+        if hasattr(status, "entities") and hasattr(status.entities, "hashtags"):
             ## the attribute entities contains hashtags, urls, symbols, media and user_mentions
+            for diese in status.entities.hashtags.text:
+                if diese not in hashtag_dict.keys():
+                    hashtag_dict[diese] = 1
+                else:
+                    hashtag_dict[diese] += 1
         if hasattr(status, "text"):
             ## text content of the tweet
             status_list.append(status.text)
-        if hasattr(status, "favorite_count"):
+        ## network analysys was dropped from the project
+        ## if hasattr(status, "favorite_count"):
             ## number of times this status was favorited
             ## network analysys was dropped from the project
-        if hasattr(status, "retweet_count"):
+        ## if hasattr(status, "retweet_count"):
             ## number of times this status was retweeted
-    return tweet_count, status_list
+    return tweet_count, status_list, hashtag_dict
