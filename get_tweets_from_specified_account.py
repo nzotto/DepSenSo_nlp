@@ -59,6 +59,7 @@ def get_twitter_data(twitter, username):
             status_list.append(status.text)
         if hasattr(status, "favorite_count"):
             ## number of times this status was favorited
+            ## network analysys was dropped from the project
         if hasattr(status, "retweet_count"):
             ## number of times this status was retweeted
     return tweet_count, status_list

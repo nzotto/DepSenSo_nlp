@@ -5,6 +5,9 @@
 
     Example of use of every function.
 """
+## plotting
+import matplotlib.pyplot as plot
+
 ## just for one example
 import emoji
 
@@ -61,16 +64,16 @@ print("sentiment analysis using the classifier:")
 print("-1 = negative, 0 = neutral, 1 = positive")
 classifier, vectorizer = sa_class.innitialisation_classifier()
 ## the clasifier takes a string or list of string as first parameter
-score_0 = sa_class.sentiment_analysis(sent_0, classifier, vectorizer)
-print("score = ", score_0)
+scoreClass = sa_class.sentiment_analysis(sent_0, classifier, vectorizer)
+print("score = ", scoreClass)
 print()
 
 ## ... using SentiWordNet:
 print("sentiment analysis using SentiWordNet:")
 print("-1 = negative, 0 = neutral, 1 = positive")
 print(sent_0)
-score_0 = sa_swn.SentiWordnet_analysis(sentence0AsTokens)
-print("score = ", score_0)
+scoreSWT = sa_swn.SentiWordnet_analysis(sentence0AsTokens)
+print("score = ", scoreSWT)
 print()
 
 ## topic modeling...
