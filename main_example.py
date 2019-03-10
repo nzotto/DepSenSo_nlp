@@ -96,6 +96,6 @@ print("topic modeling using lda:")
 lda_res = tm_lda.topic_modeling(sentence0AsTokens)
 print(sent_0)
 print("results = ")
-for i in range(len(lda_res)):
-    print(lda_res[i])
+for topic in lda_res.keys():
+    print("topic = ", topic, " proba = ", lda_res[topic])
 print()

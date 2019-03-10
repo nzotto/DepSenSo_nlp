@@ -29,8 +29,9 @@ def topic_modeling(lemmas):
     doc_topic = lda_model.get_document_topics(bow)
 
     ## formating result as a {topic: proba} dictionary
-    res = []
+    res = {}
     for index, prob in sorted(doc_topic, key=lambda var: -1 * var[1]):
-        res.append("Probability: {}\t Topic: {}".format(prob, lda_model.print_topic(index, 5)))  
+        ## res.append("Probability: {}\t Topic: {}".format(prob, lda_model.print_topic(index, 5)))
+        res[lda_model.print_topic(index, 5)] = prob
     return res
     
