@@ -24,12 +24,12 @@ def tokenize(text,textSrc="other"):
     tokenize text and removes user handles ("@userName"), long words ("loooong"="looong") and removes uppercases
     :param text: str, a string to be tokenized
     :param textSrc: str, the source of the text. Either reddit or twitter
-    :return: list of str, the tokens 
+    :return: res: the tokens, a list of str
+             userMentions: the users mentioned in the post, list of str
     """
     assert type(text) == str and type(textSrc) == str
     assert textSrc== 'reddit' or textSrc== 'twitter' or textSrc== 'other'
-    ## data
-    userMentionsCount = 0
+    ## users data
     userMentions = []
     res = []
     ## tokenize
@@ -40,12 +40,10 @@ def tokenize(text,textSrc="other"):
         if textSrc=="twitter": ## @userName
             if t.startswith('@') and t not in userMentions:
                 userMentions.append(t)
-                userMentionsCount += 1
                 continue
         if textSrc=="reddit": ## /u/userName
             if t.startswith('/u/') and t not in userMentions:
                 userMentions.append(t)
-                userMentionsCount += 1
                 continue
         ## removes hyperlinks
         if str(t).find('http') != -1:
@@ -57,4 +55,4 @@ def tokenize(text,textSrc="other"):
         if t in stopwords.words('english'):
             continue
         res.append(t)
-    return res, userMentionsCount
+    return res, userMentions
