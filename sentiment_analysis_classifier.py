@@ -11,9 +11,9 @@ import pandas as pd
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import CountVectorizer
 
-def innitialisation_classifier():
+def innitialisation_classifier(n = None):
     """
-
+    :param n: the number of range n-grams used by the vecorizer. Defaults to None 
     :return: a trained naive_bayes classifier and a vectorizer for text.
     """
     ## import tweet data into an array.
@@ -39,8 +39,10 @@ def innitialisation_classifier():
             y.append(sent['sentiment'][i])
 
     ## machine learning.
-    vectorizer = CountVectorizer(stop_words='english')
-
+    if n:
+        vectorizer = CountVectorizer(stop_words='english', ngram_range=(n,n))
+    else:
+        vectorizer = CountVectorizer(stop_words='english')
     train_features = vectorizer.fit_transform(x)
     nb = MultinomialNB()
     nb.fit(train_features, [int(r) for r in y])
@@ -53,16 +55,14 @@ def sentiment_analysis(text, clas, vect):
     :param text: a list of strings or a single string to be classified
     :param clas: a trained classifier for sentiment analysis
     :param vect: a text vectorizer
-    :return: a list of tuples such as (text, prediction) with a polarity of 1 bing positive, 0 neutral and -1 negative.
+    :return: res, the sentiment score such as a polarity of 1 being positive, 0 neutral and -1 negative.
     """
     assert type(text) is list or type(text) is str
-    res=[]
+    res=0
     if type(text) is list:
         for t in text:
-            res.append((t, clas.predict(vect.transform([t]))[0]))
+            res += clas.predict(vect.transform([t]))[0]
     else:
-        res.append((text, clas.predict(vect.transform([text]))[0]))
+        res = clas.predict(vect.transform([text]))[0]
     return res
     
-
-if __name__ == '__main__': main()
