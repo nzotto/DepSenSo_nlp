@@ -59,13 +59,28 @@ print()
 sentence0AsTokens = lematized_tokens[:9] 
 
 ## sentiment analysis...
-## ... using the classifier:
+## ... using the classifiers:
 print("sentiment analysis using the classifier:")
 print("-1 = negative, 0 = neutral, 1 = positive")
-classifier, vectorizer = sa_class.innitialisation_classifier()
-## the clasifier takes a string or list of string as first parameter
-scoreClass = sa_class.sentiment_analysis(sent_0, classifier, vectorizer)
-print("score = ", scoreClass)
+tdText, tdSent = sa_class.import_tweetdata()
+vectOneG = sa_class.initialize_vectorizer()
+vectTwoG = sa_class.initialize_vectorizer(n=2)
+## ... ... naive bayes
+nb= sa_class.innitialize_naibeBayes(vectOneG,tdText,tdSent)
+scoreNB = sa_class.sentiment_analysis(sent_0, nb, vectOneG)
+## ... ... naive bayes 2-grams
+nb2= sa_class.innitialize_naibeBayes(vectTwoG,tdText,tdSent)
+scoreNB2 = sa_class.sentiment_analysis(sent_0, nb2, vectTwoG)            
+## ... ... ridge
+ridge = sa_class.innitialize_ridge(vectOneG,tdText,tdSent)
+scoreRIDGE = sa_class.sentiment_analysis(sent_0, ridge, vectOneG)
+## ... ... logistic regression
+lrc = sa_class.innitialize_logisticRegression(vectOneG,tdText,tdSent)
+scoreLRC = sa_class.sentiment_analysis(sent_0, lrc, vectOneG)                                 
+print("scoreNB = ", scoreNB)
+print("scoreNB2 = ", scoreNB2)
+print("scoreRIDGE = ", scoreRIDGE)
+print("scoreLRC = ", scoreLRC)
 print()
 
 ## ... using SentiWordNet:
