@@ -62,25 +62,36 @@ sentence0AsTokens = lematized_tokens[:9]
 ## ... using the classifiers:
 print("sentiment analysis using the classifier:")
 print("-1 = negative, 0 = neutral, 1 = positive")
-tdText, tdSent = sa_class.import_tweetdata()
+###
+processed_sent = sa_class.preprocess_text(sent_0)
+###
+tdText,testT,tdSent,testS = sa_class.import_tweetdata()
 vectOneG = sa_class.initialize_vectorizer()
 vectTwoG = sa_class.initialize_vectorizer(n=2)
 ## ... ... naive bayes
-nb= sa_class.innitialize_naibeBayes(vectOneG,tdText,tdSent)
-scoreNB = sa_class.sentiment_analysis(sent_0, nb, vectOneG)
+nb= sa_class.initialize_naibeBayes(vectOneG,tdText,tdSent)
+scoreNB = sa_class.sentiment_analysis(processed_sent, nb, vectOneG)
 ## ... ... naive bayes 2-grams
-nb2= sa_class.innitialize_naibeBayes(vectTwoG,tdText,tdSent)
-scoreNB2 = sa_class.sentiment_analysis(sent_0, nb2, vectTwoG)            
+nb2= sa_class.initialize_naibeBayes(vectTwoG,tdText,tdSent)
+scoreNB2 = sa_class.sentiment_analysis(processed_sent, nb2, vectTwoG)            
 ## ... ... ridge
-ridge = sa_class.innitialize_ridge(vectOneG,tdText,tdSent)
-scoreRIDGE = sa_class.sentiment_analysis(sent_0, ridge, vectOneG)
+ridge = sa_class.initialize_ridge(vectOneG,tdText,tdSent)
+scoreRIDGE = sa_class.sentiment_analysis(processed_sent, ridge, vectOneG)
 ## ... ... logistic regression
-lrc = sa_class.innitialize_logisticRegression(vectOneG,tdText,tdSent)
-scoreLRC = sa_class.sentiment_analysis(sent_0, lrc, vectOneG)                                 
+lrc = sa_class.initialize_logisticRegression(vectOneG,tdText,tdSent)
+scoreLRC = sa_class.sentiment_analysis(processed_sent, lrc, vectOneG)
+## ... ... linear support vector machine
+svm = sa_class.initialize_supportVectorMachine(vectOneG,tdText,tdSent)
+scoreSVM = sa_class.sentiment_analysis(processed_sent, svm, vectOneG)
+## ... ... decission tree
+dtc = sa_class.initialize_decisionTree(vectOneG,tdText,tdSent)
+scoreDTC = sa_class.sentiment_analysis(processed_sent, dtc, vectOneG)
 print("scoreNB = ", scoreNB)
 print("scoreNB2 = ", scoreNB2)
 print("scoreRIDGE = ", scoreRIDGE)
 print("scoreLRC = ", scoreLRC)
+print("scoreSVM = ", scoreSVM)
+print("scoreDTC = ", scoreDTC)
 print()
 
 ## ... using SentiWordNet:
