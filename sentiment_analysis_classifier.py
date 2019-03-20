@@ -18,6 +18,8 @@ from sklearn.svm import LinearSVC
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
+## persistence
+from joblib import dump, load
 
 def preprocess_text(text):
     """
@@ -60,76 +62,60 @@ def import_tweetdata():
     trainTxt, testTxt, trainSent, testSent = train_test_split(x, y, test_size=0.25, random_state=None)
     return trainTxt, testTxt, trainSent, testSent
 
-def initialize_vectorizer(n = None):
+def initialize_classifiers():
     """
-    :param n: the number of range n-grams used by the vecorizer. Defaults to None
-    :return: a text vectorizer
+Loads all our trained classifiers using joblib's load.
+    :return:
     """
-    if n:
-        vectorizer = CountVectorizer(stop_words='english', ngram_range=(n,n))
-    else:
-        vectorizer = CountVectorizer(stop_words='english')
-    return vectorizer
+    ## load the classifiers
+    nb = load('./data/joblib_classifiers/nbOneGrams.joblib')
+    nbTwoGrams = load('./data/joblib_classifiers/nbTwoGrams.joblib')
+    ridge = load('./data/joblib_classifiers/ridge.joblib')
+    lrc = load('./data/joblib_classifiers/lrc.joblib')
+    lsvm = load('./data/joblib_classifiers/lsvm.joblib')
+    dtc = load('./data/joblib_classifiers/dtc.joblib')
+    vectOneGram = load('./data/joblib_classifiers/vectOneG.joblib')
+    vectTwoGram = load('./data/joblib_classifiers/vectTwoG.joblib')
+    return nb, nbTwoGrams, ridge, lrc, lsvm, dtc, vectOneGram, vectTwoGram
 
-def initialize_naibeBayes(vectorizer, tweetdataText, tweetdataSentiment):
+def train_classifiers(tweetdataText, tweetdataSentiment):
     """
-    :param vectorizer: a text vectorizer
+Trains 6 classifiers and saves them using joblib's dump.
     :param tweetdataText: A list initialized in import_tweetdata
     :param tweetdataSentiment: A list initialized in import_tweetdata
-    :return: a trained naive_bayes classifier and it's text vectorizer.
     """
-    train_features = vectorizer.fit_transform(tweetdataText)
+    ## initialize training features
+    oneGramsVectorizer = CountVectorizer(stop_words='english')
+    twoGramsVectorizer = CountVectorizer(stop_words='english', ngram_range=(2,2))
+    oneGram_train_features = oneGramsVectorizer.fit_transform(tweetdataText)
+    twoGram_train_features = twoGramsVectorizer.fit_transform(tweetdataText)
+    ## naive bayes with 1 grams
     nb = MultinomialNB()
-    nb.fit(train_features, [int(r) for r in tweetdataSentiment])
-    return nb
-
-def initialize_ridge(vectorizer, tweetdataText, tweetdataSentiment):
-    """
-    :param vectorizer: a text vectorizer
-    :param tweetdataText: A list initialized in import_tweetdata
-    :param tweetdataSentiment: A list initialized in import_tweetdata
-    :return: a trained ridge classifier and it's text vectorizer.
-    """
-    train_features = vectorizer.fit_transform(tweetdataText)
+    nb.fit(oneGram_train_features, [int(r) for r in tweetdataSentiment])
+    dump(nb, './data/joblib_classifiers/nbOneGrams.joblib')
+    ## naive bayes with 2 grams
+    nbTwoG = MultinomialNB()
+    nbTwoG.fit(twoGram_train_features, [int(r) for r in tweetdataSentiment])
+    dump(nbTwoG, './data/joblib_classifiers/nbTwoGrams.joblib')
+    ## ridge
     ridge = RidgeClassifier()
-    ridge.fit(train_features, [int(r) for r in tweetdataSentiment])
-    return ridge
-
-def initialize_logisticRegression(vectorizer, tweetdataText, tweetdataSentiment):
-    """
-    :param vectorizer: a text vectorizer
-    :param tweetdataText: A list initialized in import_tweetdata
-    :param tweetdataSentiment: A list initialized in import_tweetdata
-    :return: a trained logistic regression classifier.
-    """
-    train_features = vectorizer.fit_transform(tweetdataText)
+    ridge.fit(oneGram_train_features, [int(r) for r in tweetdataSentiment])
+    dump(ridge, './data/joblib_classifiers/ridge.joblib')
+    ## logistic regression
     lrc = LogisticRegression()
-    lrc.fit(train_features, [int(r) for r in tweetdataSentiment])
-    return lrc
-
-def initialize_supportVectorMachine(vectorizer, tweetdataText, tweetdataSentiment):
-    """
-    :param vectorizer: a text vectorizer
-    :param tweetdataText: A list initialized in import_tweetdata
-    :param tweetdataSentiment: A list initialized in import_tweetdata
-    :return: a trained svm classifier.
-    """
-    train_features = vectorizer.fit_transform(tweetdataText)
+    lrc.fit(oneGram_train_features, [int(r) for r in tweetdataSentiment])
+    dump(lrc, './data/joblib_classifiers/lrc.joblib')
+    ## linear support vector machine
     lsvm = LinearSVC()
-    lsvm.fit(train_features, [int(r) for r in tweetdataSentiment])
-    return lsvm
-
-def initialize_decisionTree(vectorizer, tweetdataText, tweetdataSentiment):
-    """
-    :param vectorizer: a text vectorizer
-    :param tweetdataText: A list initialized in import_tweetdata
-    :param tweetdataSentiment: A list initialized in import_tweetdata
-    :return: a trained decision tree classifier.
-    """
-    train_features = vectorizer.fit_transform(tweetdataText)
+    lsvm.fit(oneGram_train_features, [int(r) for r in tweetdataSentiment])
+    dump(lsvm, './data/joblib_classifiers/lsvm.joblib')
+    ## decision tree
     dtc = tree.DecisionTreeClassifier()
-    dtc.fit(train_features, [int(r) for r in tweetdataSentiment])
-    return dtc
+    dtc.fit(oneGram_train_features, [int(r) for r in tweetdataSentiment])
+    dump(dtc, './data/joblib_classifiers/dtc.joblib')
+    ## vectorizers
+    dump(oneGramsVectorizer, './data/joblib_classifiers/vectOneG.joblib')
+    dump(twoGramsVectorizer, './data/joblib_classifiers/vectTwoG.joblib')
 
 def score_classifier(clas, vect, testTxt, testSent):
     """
@@ -145,17 +131,11 @@ def score_classifier(clas, vect, testTxt, testSent):
         
 def sentiment_analysis(text, clas, vect):
     """
-    :param text: a list of strings or a single string to be classified
+    :param text: a single string to be classified
     :param clas: a trained classifier for sentiment analysis
     :param vect: a text vectorizer
     :return: res, the sentiment score such as a polarity of 1 being positive, 0 neutral and -1 negative.
     """
-    assert type(text) is list or type(text) is str
-    res=0
-    if type(text) is list:
-        for t in text:
-            res += clas.predict(vect.transform([preprocess_text(t)]))[0]
-    else:
-        res = clas.predict(vect.transform([preprocess_text(text)]))[0]
-    return res
-    
+    assert type(text) is str
+    res = clas.predict(vect.transform([text]))
+    return res[0]
