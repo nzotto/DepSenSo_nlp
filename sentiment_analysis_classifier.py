@@ -119,15 +119,13 @@ Trains 6 classifiers and saves them using joblib's dump.
 
 def score_classifier(clas, vect, testTxt, testSent):
     """
-    return the accuracy score of a trained classifier on a test set
+    return the classification report of a trained classifier on a test set
     :param clas: a trained classifier
     :param vect: a text vectorizer
     :param tweetdataText: A test set initialized in import_tweetdata, the texttual part of the sent
     :param tweetdataSentiment: A list initialized in import_tweetdata, the sentiment score part of the set
     """
-    tmp = vect.fit_transform(testTxt)
-    score = clas.score(tmp, [int(r) for r in testSent])
-    return score
+    return classification_report(testSent, clas.predict(vect.transform(testTxt)), digits=4)
         
 def sentiment_analysis(text, clas, vect):
     """
